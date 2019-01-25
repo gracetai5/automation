@@ -31,10 +31,10 @@ export nodenumber=2
 
 # network config
 # comment all 4 lines if the network resembles crowbar defaults
-export NOSETUPPORTFORWARDING=1
-export adminip=192.168.100.100
-export admingw=192.168.100.1
-export net_admin=192.168.100
+#export NOSETUPPORTFORWARDING=1
+#export adminip=192.168.100.100
+#export admingw=192.168.100.1
+#export net_admin=192.168.100
 
 # --------------------
 
