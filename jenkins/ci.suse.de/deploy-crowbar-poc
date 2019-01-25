@@ -9,8 +9,8 @@
 #
 #
 
-zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Pool/
-zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Updates/
+zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Pool/ SLES12-SP4-Pool
+zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Updates/ SLES12-SP4-Updates
 zypper ref
 zypper in ca-certificates-mozilla git-core
 
@@ -20,7 +20,7 @@ zypper in ca-certificates-mozilla git-core
 #export debug_qa_crowbarsetup=1
 
 # mirror config
-export susedownload=bs-mirror.prv.suse.net
+export susedownload=ibs-mirror.prv.suse.net
 export reposerver=provo-clouddata.cloud.suse.de
 
 # cloud config
