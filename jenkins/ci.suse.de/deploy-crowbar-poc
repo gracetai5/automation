@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# this config was mainly taken from https://ci.suse.de/job/cloud-mkphyscloud/configure
+# it is just a static config only for the crowbar poc
+
+
+# TODO
+# - add to base image: ca-certificates-mozilla git-core
+#
+#
+
+zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Pool/
+zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Updates/
+zypper ref
+zypper in ca-certificates-mozilla git-core
+
+# --------------------
+
+# uncomment to debug
+#export debug_qa_crowbarsetup=1
+
+# mirror config
+export susedownload=bs-mirror.prv.suse.net
+export reposerver=provo-clouddata.cloud.suse.de
+
+# cloud config
+export cloud=ecpc1
+export cloudsource=develcloud9
+export libvirt_type=physical
+export nodenumber=2
+
+# network config
+# comment all 4 lines if the network resembles crowbar defaults
+export NOSETUPPORTFORWARDING=1
+export adminip=192.168.100.100
+export admingw=192.168.100.1
+export net_admin=192.168.100
+
+# --------------------
+
+# self bootstrapping automation
+curl http://clouddata.cloud.suse.de/git/automation/scripts/jenkins/update_automation | bash -x
+
+# deploy crowbar
+timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar bootstrapcrowbar installcrowbar allocate waitcloud proposal"
