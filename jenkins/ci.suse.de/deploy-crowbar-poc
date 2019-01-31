@@ -5,17 +5,11 @@
 
 
 # TODO
-# - add to base image: ca-certificates-mozilla git-core
+# - add to base image: ca-certificates-mozilla git-core screen
 #
 #
-
-zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Pool/ SLES12-SP4-Pool
-zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-SP4-Updates/ SLES12-SP4-Updates
-zypper ref
-zypper in ca-certificates-mozilla git-core
 
 # --------------------
-
 # uncomment to debug
 #export debug_qa_crowbarsetup=1
 
@@ -25,21 +19,40 @@ export reposerver=provo-clouddata.cloud.suse.de
 
 # cloud config
 export cloud=ecpc1
-export cloudsource=develcloud9
+export cloudsource=develcloud8
+# SP3 for cloud8
+SP="SP3-"
 export libvirt_type=physical
 export nodenumber=2
-
-# network config
-# comment all 4 lines if the network resembles crowbar defaults
-#export NOSETUPPORTFORWARDING=1
-#export adminip=192.168.100.100
-#export admingw=192.168.100.1
-#export net_admin=192.168.100
-
 # --------------------
 
-# self bootstrapping automation
-curl http://clouddata.cloud.suse.de/git/automation/scripts/jenkins/update_automation | bash -x
 
-# deploy crowbar
-timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar bootstrapcrowbar installcrowbar allocate waitcloud proposal"
+case "$1" in
+  pre)
+    zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-${SP}Pool/ SLES12-${SP}Pool
+    zypper ar http://provo-clouddata.cloud.suse.de/repos/x86_64/SLES12-${SP}Updates/ SLES12-${SP}Updates
+    zypper ref
+    zypper in ca-certificates-mozilla git-core screen
+    # bootstrap automation
+    curl http://clouddata.cloud.suse.de/git/automation/scripts/jenkins/update_automation | bash -x
+    ;;
+  poc-deploy)
+    timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar bootstrapcrowbar installcrowbar allocate waitcloud proposal"
+    ;;
+  stage1|SCRD-7367)
+    # this implements: https://jira.nue.suse.com/browse/SCRD-7367
+    timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; onadmin_runlist prepareinstallcrowbar bootstrapcrowbar installcrowbar"
+    ;;
+  stage2|SCRD-7368)
+    # TODO implement https://jira.nue.suse.com/browse/SCRD-7368
+    echo TODO
+    ;;
+  stage3|SCRD-7369)
+    # FIXME implement https://jira.nue.suse.com/browse/SCRD-7369
+    timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; TODO: call crowbar batch with batch file"
+    ;;
+  stage4|SCRD-7370)
+    # this implements: https://jira.nue.suse.com/browse/SCRD-7370
+    timeout --signal=ALRM 150m bash -x -c ". ~/github.com/SUSE-Cloud/automation/scripts/qa_crowbarsetup.sh ; onadmin_testsetup"
+    ;;
+esac
